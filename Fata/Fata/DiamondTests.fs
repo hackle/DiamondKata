@@ -28,6 +28,8 @@ let rotate lists =
 
 let explode (line: string) =
     [ for l in line -> l]
+
+let condense = List.filter (fun x -> x <> ' ')  >> List.distinct
  
 [<Fact>]
 let ``For 'B' I have ABA vertically`` () = 
@@ -38,10 +40,8 @@ let ``For 'B' I have ABA vertically`` () =
         matrix.Split([| System.Environment.NewLine |], System.StringSplitOptions.RemoveEmptyEntries)
         |> List.ofArray
         |> List.map explode
-        |> List.map (fun l -> 
-                            l 
-                            |> List.filter (fun x -> x <> ' ') 
-                            |> List.distinct)
+        |> List.map condense
+
     let expected = [ [ 'A' ]; ['B']; ['A'] ]
     Assert.Equal<char list list>(actual, expected)
 
@@ -54,9 +54,7 @@ let ``For 'B' I have 'BAB' horozontally`` () =
         |> List.ofArray
         |> List.map explode
         |> rotate
-        |> List.map (fun ls -> 
-                        ls 
-                        |> List.filter (fun i -> i <> ' ')
-                        |> List.distinct)
+        |> List.map condense
+
     Assert.Equal<char list>(actual, [ ['B']; ['A']; ['B'] ]);
         
