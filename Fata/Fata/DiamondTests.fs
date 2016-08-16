@@ -1,22 +1,8 @@
 ﻿module FataTests
 
-open Fata.Dimaond
+open Fata.Diamond
 open Xunit
 open Swensen.Unquote
-
-[<Fact>]
-let ``For 'A' the diamond is just 'A'`` () = 
-    let actual = diamond 'A'
-    let expected = [ [ 'A' ] ]
-    Assert.Equal<char list list>(actual, expected)
-     
-[<Fact>]
-let ``For 'B' I have ABA vertically`` () = 
-    let actual = 
-        diamond 'B' 
-        |> List.map (fun l -> l |> List.filter (fun x -> x <> ' '))
-    let expected = [ [ 'A' ]; ['B']; ['A'] ]
-    Assert.Equal<char list list>(actual, expected)
 
 let splitHead ls = 
     match ls with
@@ -40,12 +26,37 @@ let rec folder (ls: 'a list) (carry: 'a list list)  =
 let rotate lists = 
     List.foldBack folder lists (lists.Head |> List.map (fun l -> List.empty<char>))
 
-[ [ 'A'; 'B'; 'C' ]; [ 'D'; 'E'; 'F' ]]
-|> rotate
+let explode (line: string) =
+    [ for l in line -> l]
+ 
+[<Fact>]
+let ``For 'B' I have ABA vertically`` () = 
+    let matrix = 
+        diamond 'B' 
+    
+    let actual =
+        matrix.Split([| System.Environment.NewLine |], System.StringSplitOptions.RemoveEmptyEntries)
+        |> List.ofArray
+        |> List.map explode
+        |> List.map (fun l -> 
+                            l 
+                            |> List.filter (fun x -> x <> ' ') 
+                            |> List.distinct)
+    let expected = [ [ 'A' ]; ['B']; ['A'] ]
+    Assert.Equal<char list list>(actual, expected)
 
 [<Fact>]
 let ``For 'B' I have 'BAB' horozontally`` () =
-    let actual =
+    let matrix =
         diamond 'B'
-        |> slice
-        |> 
+    let actual =
+        matrix.Split([| System.Environment.NewLine |], System.StringSplitOptions.RemoveEmptyEntries)
+        |> List.ofArray
+        |> List.map explode
+        |> rotate
+        |> List.map (fun ls -> 
+                        ls 
+                        |> List.filter (fun i -> i <> ' ')
+                        |> List.distinct)
+    Assert.Equal<char list>(actual, [ ['B']; ['A']; ['B'] ]);
+        
