@@ -10,6 +10,9 @@ namespace Cata
     {
         static void Main(string[] args)
         {
+            Console.Write(new Diamond().Get('G'));
+
+            Console.ReadKey();
         }
     }
 }
