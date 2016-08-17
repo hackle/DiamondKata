@@ -1,15 +1,19 @@
 ﻿namespace Fata
 
 module Diamond =
-    let diamond (letter: char) = 
-        let vertical = 
-            [ (int 'A') .. (int letter)] @ [(int letter) - 1 .. -1 .. (int 'A')]
-            |> List.map char
-        let cntRows = vertical |> List.length
+    let keepLetterOrSpace ls lt = 
+        ls |> List.map (fun letter -> if letter = lt then letter else ' ')
+
+    let listToString delimiter =
+        List.map string 
+        >> Seq.ofList 
+        >> String.concat delimiter
+
+    let diamond (letter: char) =                        
+        let horizontal = [ (int letter) .. -1 .. (int 'A')] @ [ (int 'B') .. (int letter) ] |> List.map char
         
-        [ (int letter) .. -1 .. (int 'A')] @ [ (int 'B') .. (int letter) ]
+        [ (int 'A') .. (int letter)] @ [(int letter) - 1 .. -1 .. (int 'A')]
         |> List.map char
-        |> List.replicate cntRows
-        |> List.map2 (fun v h -> h |> List.map (fun l -> if l = v then v else ' ')) vertical
-        |> List.map (fun l -> l |> List.map string |> Seq.ofList |> String.concat "")
-        |> Seq.ofList |> String.concat System.Environment.NewLine
+        |> List.map (keepLetterOrSpace horizontal >> listToString "")
+        |> Seq.ofList 
+        |> String.concat System.Environment.NewLine
